@@ -4,7 +4,10 @@ import eyed3
 import random
 import string
 
-directory = '/home/pydev/Music/regga/'
+# directory = '/home/pydev/Music/regga/'
+directory = 'd:/dance/kim3a/'
+default_prefix = directory[-6:-1]+'-v5-'
+print(default_prefix)
 os.chdir(directory)
 
 # directory = os.fsencode(directory)
@@ -27,24 +30,27 @@ def extract_title():
 def retitle_and_rename():
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
-        track = eyed3.load(filename)
-        print(filename)
+        try:
+            track = eyed3.load(filename)
+            print(filename)
+            if not track:
+                continue
 
-        if track.tag.artist[0] != 'v':
-            track.tag.artist = 'v5'
+            if track.tag.artist[0] != 'v':
+                track.tag.artist = 'v5'
+            realtitle = track.tag.composer
 
-        realtitle = track.tag.composer
-
-        if realtitle is None:
-            realtitle = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-            track.tag.composer = realtitle
-        realtitle = realtitle.lower().replace('-', '')
-        print(realtitle)
-
-        track.tag.title = '{}-{}-{}'.format(track.tag.album, track.tag.artist,realtitle)
-
-        track.tag.save()
-
-        os.rename(file,track.tag.title+'.mp3')
+            if realtitle is None:
+                realtitle = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+                track.tag.composer = realtitle
+            realtitle = realtitle.lower().replace('-', '')
+            print(realtitle)
+            track.tag.title = '{}-{}-{}'.format(track.tag.album, track.tag.artist,realtitle)
+            track.tag.save()
+            os.rename(file,track.tag.title+'.mp3')
+        except Exception:
+            os.rename(file, default_prefix + ''.join(random.choices(string.ascii_uppercase + string.digits, k=10)) +'.mp3')
+        finally:
+            pass
 
 retitle_and_rename()
