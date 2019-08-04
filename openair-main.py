@@ -5,7 +5,7 @@ import random
 import string
 
 # directory = '/home/pydev/Music/regga/'
-directory = 'd:/dance/kim3a/'
+directory = 'd:/dance/bacya/'
 default_prefix = directory[-6:-1]+'-v5-'
 print(default_prefix)
 os.chdir(directory)
@@ -14,18 +14,21 @@ os.chdir(directory)
 def extract_title():
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
-        track = eyed3.load(filename)
-        print(filename)
+        try:
+            track = eyed3.load(filename)
+            print(filename)
 
-        parts = filename.split('-')
-        realtitle = parts[-1].lower().replace('-', '')
-        if realtitle.endswith('.mp3'):
-            realtitle = realtitle[:-4]
-        if realtitle is None:
-            realtitle = filename
-        print(realtitle)
-        track.tag.composer = realtitle
-        track.tag.save()
+            parts = filename.split('-')
+            realtitle = parts[-1].lower().replace('-', '')
+            if realtitle.endswith('.mp3'):
+                realtitle = realtitle[:-4]
+            if realtitle is None:
+                realtitle = filename
+            print(realtitle)
+            track.tag.composer = realtitle
+            track.tag.save()
+        except Exception:
+            print('cant be processed')
 
 def retitle_and_rename():
     for file in os.listdir(directory):
@@ -53,4 +56,5 @@ def retitle_and_rename():
         finally:
             pass
 
+# extract_title()
 retitle_and_rename()
