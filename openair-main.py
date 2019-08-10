@@ -4,19 +4,20 @@ import eyed3
 import random
 import string
 
-# directory = '/home/pydev/Music/regga/'
-directory = 'd:/dance/kimma/'
-default_prefix = directory[-6:-1]+'-v5-'
+directory = '/media/pydev/backup/kiraw/rawwa/'
+# directory = 'd:/dance/kimma/'
+default_prefix = directory[-6:-1] + '-v5-'
 print(default_prefix)
 os.chdir(directory)
+
 
 # directory = os.fsencode(directory)
 def extract_title():
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
+        print(filename)
         try:
             track = eyed3.load(filename)
-            print(filename)
 
             parts = filename.split('-')
             realtitle = parts[-1].lower().replace('-', '')
@@ -30,34 +31,40 @@ def extract_title():
         except Exception:
             print('cant be processed')
 
+
 def retitle_and_rename():
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
         print(filename)
+
+        track = eyed3.load(filename)
+
+        if not track:
+            print('track not processed')
+            os.rename(filename, default_prefix + ''.join(
+                random.choices(string.ascii_uppercase + string.digits, k=10)) + '.mp3')
+            continue
+
+        if track.tag.artist[0] != 'v':
+            track.tag.artist = 'v5'
+
+        realtitle = track.tag.composer
+
+        if realtitle is None:
+            realtitle = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+            track.tag.composer = realtitle
+        realtitle = realtitle.lower().replace('-', '')
+        print('real title: ' + realtitle)
+        track.tag.title = '{}-{}-{}'.format(track.tag.album, track.tag.artist, realtitle)
+
         try:
-            track = eyed3.load(filename)
-
-            if not track:
-                os.rename(filename, default_prefix + ''.join(
-                    random.choices(string.ascii_uppercase + string.digits, k=10)) + '.mp3')
-                continue
-
-            if track.tag.artist[0] != 'v':
-                track.tag.artist = 'v5'
-            realtitle = track.tag.composer
-
-            if realtitle is None:
-                realtitle = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-                track.tag.composer = realtitle
-            realtitle = realtitle.lower().replace('-', '')
-            print(realtitle)
-            track.tag.title = '{}-{}-{}'.format(track.tag.album, track.tag.artist,realtitle)
             track.tag.save()
-            os.rename(file,track.tag.title+'.mp3')
-        except Exception:
-            os.rename(filename, default_prefix + ''.join(random.choices(string.ascii_uppercase + string.digits, k=10)) +'.mp3')
+        except Exception as e:
+            print('TagException happens')
+            print('Error! Code: {c}, Message, {m}'.format(c=type(e).__name__, m=str(e)))
         finally:
-            pass
+            os.rename(filename, track.tag.title + '.mp3')
+
 
 # extract_title()
 retitle_and_rename()
