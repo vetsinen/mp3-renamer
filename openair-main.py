@@ -63,7 +63,7 @@ def retitle_and_rename():
             print('TagException happens')
             print('Error! Code: {c}, Message, {m}'.format(c=type(e).__name__, m=str(e)))
         finally:
-            os.rename(filename, track.tag.title + '.mp3')
+            os.rename(filename, 'zzz'+track.tag.title + '.mp3')
 
 
 # extract_title()
