@@ -5,7 +5,7 @@ import random
 import string
 
 # directory = '/home/pydev/Music/regga/'
-directory = 'd:/dance/bacya/'
+directory = 'd:/dance/kimma/'
 default_prefix = directory[-6:-1]+'-v5-'
 print(default_prefix)
 os.chdir(directory)
@@ -33,10 +33,13 @@ def extract_title():
 def retitle_and_rename():
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
+        print(filename)
         try:
             track = eyed3.load(filename)
-            print(filename)
+
             if not track:
+                os.rename(filename, default_prefix + ''.join(
+                    random.choices(string.ascii_uppercase + string.digits, k=10)) + '.mp3')
                 continue
 
             if track.tag.artist[0] != 'v':
@@ -52,7 +55,7 @@ def retitle_and_rename():
             track.tag.save()
             os.rename(file,track.tag.title+'.mp3')
         except Exception:
-            os.rename(file, default_prefix + ''.join(random.choices(string.ascii_uppercase + string.digits, k=10)) +'.mp3')
+            os.rename(filename, default_prefix + ''.join(random.choices(string.ascii_uppercase + string.digits, k=10)) +'.mp3')
         finally:
             pass
 
