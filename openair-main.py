@@ -4,8 +4,8 @@ import eyed3
 import random
 import string
 
-directory = '/media/pydev/backup/kiraw/rawwa/'
-# directory = 'd:/dance/kimma/'
+#directory = '/media/pydev/backup/kiraw/rawwa/'
+directory = 'd:/kiraw/rawwa/'
 default_prefix = directory[-6:-1] + '-v5-'
 print(default_prefix)
 os.chdir(directory)
@@ -40,7 +40,7 @@ def retitle_and_rename():
         track = eyed3.load(filename)
 
         if not track:
-            print('track not processed')
+            print(filename + ' track not processed')
             os.rename(filename, default_prefix + ''.join(
                 random.choices(string.ascii_uppercase + string.digits, k=10)) + '.mp3')
             continue
@@ -59,11 +59,13 @@ def retitle_and_rename():
 
         try:
             track.tag.save()
+            os.rename(filename, track.tag.title + '.mp3')
         except Exception as e:
             print('TagException happens')
             print('Error! Code: {c}, Message, {m}'.format(c=type(e).__name__, m=str(e)))
+            os.rename(filename, 'zzz' + track.tag.title + '.mp3')
         finally:
-            os.rename(filename, 'zzz'+track.tag.title + '.mp3')
+            pass
 
 
 # extract_title()
