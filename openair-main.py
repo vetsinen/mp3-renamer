@@ -5,7 +5,7 @@ import random
 import string
 
 #directory = '/media/pydev/backup/kiraw/rawwa/'
-directory = 'd:/kiraw/rawwa/'
+directory = 'd:/kiraw/kim3a/'
 default_prefix = directory[-6:-1] + '-v5-'
 print(default_prefix)
 os.chdir(directory)
