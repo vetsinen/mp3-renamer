@@ -11,12 +11,13 @@ from googletrans import Translator
 translator = Translator()
 
 # directory = '/media/pydev/backup/kiraw/rawwa/'
-directory = 'd:/kiraw/kim3a/'
+directory = 'd:/openair/bac4a/'
 default_prefix = directory[-6:-1] + '-v5-'
 os.chdir(directory)
 
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
+    print(filename)
 
     audio = EasyID3(filename)
     v = audio['artist'][0]
