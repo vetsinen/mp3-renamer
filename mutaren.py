@@ -11,27 +11,34 @@ from googletrans import Translator
 translator = Translator()
 
 # directory = '/media/pydev/backup/kiraw/rawwa/'
-directory = 'd:/openair/bac4a/'
-default_prefix = directory[-6:-1] + '-v5-'
+directory = '/home/pydev/open-dj/static/music/kimba'
+directory = '/home/pydev/Downloads/Telegram Desktop/bacha'
+default_prefix = directory[-5:]
 os.chdir(directory)
 
-for file in os.listdir(directory):
-    filename = os.fsdecode(file)
-    print(filename)
+def file_renamer():
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        audio = EasyID3(filename)
+        title : string = (audio['title'][0]).lower().replace('-',' ')
+        # if v[0] != 'v' or len(v) != 2:
+        #     v = 'v5'
+        #     audio['artist'] = v
+        #album = audio['album'][0]
 
-    audio = EasyID3(filename)
-    v = audio['artist'][0]
-    if v[0] != 'v' or len(v) != 2:
-        v = 'v5'
-        audio['artist'] = v
-    title = audio['composer'][0]
-    album = audio['album'][0]
-    if title is None or title == '':
-        title = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-    title = translator.translate(title).text + '-' + title
+        if title is None or title == '':
+            title = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        audio['composer'] = title
+        #title = translator.translate(title).text + '-' + title
+        fulltitle = '{}-{}'.format(default_prefix, title)
+        print(filename, fulltitle)
+        audio['title'] = fulltitle
+        audio.save()
+        try:
+            os.rename(filename, fulltitle + '.mp3')
+        except:
+            os.rename(filename, fulltitle + ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))+ '.mp3')
 
-    print(filename, album, v, title)
-    fulltitle = '{}-{}-{}'.format(album, v, title).lower()
-    audio['title'] = fulltitle
-    audio.save()
-    os.rename(filename, fulltitle + '.mp3')
+
+if __name__=='__main__':
+    file_renamer()
