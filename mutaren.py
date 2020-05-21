@@ -11,8 +11,8 @@ from googletrans import Translator
 translator = Translator()
 
 # directory = '/media/pydev/backup/kiraw/rawwa/'
-directory = '/home/pydev/open-dj/static/music/kimba'
-directory = '/home/pydev/Downloads/Telegram Desktop/bacha'
+directory = '/home/pydev/open-dj/static/music/salsa'
+directory = '/home/pydev/sorting/salra'
 default_prefix = directory[-5:]
 os.chdir(directory)
 
@@ -20,14 +20,9 @@ def file_renamer():
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
         audio = EasyID3(filename)
-        title : string = (audio['title'][0]).lower().replace('-',' ')
-        # if v[0] != 'v' or len(v) != 2:
-        #     v = 'v5'
-        #     audio['artist'] = v
-        #album = audio['album'][0]
-
-        if title is None or title == '':
-            title = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        title : string = (audio.setdefault('title',[''.join(random.choices(string.ascii_uppercase + string.digits, k=10))])[0]).strip().lower().replace('-',' ')
+        # if title is None or title == '':
+        #     title = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
         audio['composer'] = title
         #title = translator.translate(title).text + '-' + title
         fulltitle = '{}-{}'.format(default_prefix, title)
@@ -39,6 +34,38 @@ def file_renamer():
         except:
             os.rename(filename, fulltitle + ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))+ '.mp3')
 
+def update_tags_filename():
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        print(filename)
+        audio = EasyID3(filename)
+        title : string = (audio['composer'][0]).strip().lower().replace('-',' ')
+
+        if title is None or title == '':
+            title = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        #title = translator.translate(title).text + '-' +
+        audio['composer'] = title
+        fulltitle = '{}-{}'.format(audio['genre'][0], title)
+        print(filename, fulltitle)
+        audio['title'] = fulltitle
+        audio['composer']=title
+        audio.save()
+        try:
+            os.rename(filename, fulltitle + '.mp3')
+        except:
+            os.rename(filename, fulltitle + ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))+ '.mp3')
+
+def backup_meta():
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        audio = EasyID3(filename)
+        print(audio)
+        if audio=={}:
+            continue
+        all_meta : string = f"{audio.setdefault('title',[''])[0]}-{filename}-{audio['artist'][0]}-{audio.setdefault('title',[''])[0]}-{filename}"
+        audio['albumartist'] = all_meta
+        audio['composer'] = audio.setdefault('title',[''])[0]
+        audio.save()
 
 if __name__=='__main__':
-    file_renamer()
+    update_tags_filename()
