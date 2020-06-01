@@ -4,6 +4,7 @@ import mutagen
 import random
 import string
 # from mutagen.id3 import ID3, TIT2
+from mutagen.id3 import ID3, ID3NoHeaderError
 from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
 from googletrans import Translator
@@ -12,21 +13,29 @@ translator = Translator()
 
 # directory = '/media/pydev/backup/kiraw/rawwa/'
 directory = '/home/pydev/open-dj/static/music/salsa'
-directory = '/home/pydev/sorting/salra'
+directory = '/home/pydev/sorting/bacha'
 default_prefix = directory[-5:]
 os.chdir(directory)
 
 def file_renamer():
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
-        audio = EasyID3(filename)
-        title : string = (audio.setdefault('title',[''.join(random.choices(string.ascii_uppercase + string.digits, k=10))])[0]).strip().lower().replace('-',' ')
+        try:
+            audio = EasyID3(filename)
+        except ID3NoHeaderError:
+            tags = ID3()
+            tags.save(filename)
+            audio = EasyID3(filename)
+        # to something with tags
+
+        title : string = (audio.setdefault('composer',[''.join(random.choices(string.ascii_uppercase + string.digits, k=10))])[0]).strip().lower().replace('-',' ')
         # if title is None or title == '':
         #     title = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        audio['composer'] = title
+        # audio['composer'] = title
         #title = translator.translate(title).text + '-' + title
-        fulltitle = '{}-{}'.format(default_prefix, title)
+        fulltitle = f"{audio['genre'][0]}-{title}"
         print(filename, fulltitle)
+
         audio['title'] = fulltitle
         audio.save()
         try:
@@ -58,14 +67,18 @@ def update_tags_filename():
 def backup_meta():
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
-        audio = EasyID3(filename)
-        print(audio)
-        if audio=={}:
-            continue
-        all_meta : string = f"{audio.setdefault('title',[''])[0]}-{filename}-{audio['artist'][0]}-{audio.setdefault('title',[''])[0]}-{filename}"
+        try:
+            audio = EasyID3(filename)
+        except ID3NoHeaderError:
+            tags = ID3()
+            tags.save(filename)
+            audio = EasyID3(filename)
+        # to something with tags
+        all_meta : string = f"{audio.setdefault('title',[''])[0]}-{audio.setdefault('artist',[''])[0]}-{filename}"
         audio['albumartist'] = all_meta
         audio['composer'] = audio.setdefault('title',[''])[0]
+        print(filename,'-->', all_meta)
         audio.save()
 
 if __name__=='__main__':
-    update_tags_filename()
+    file_renamer()
