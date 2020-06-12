@@ -13,7 +13,10 @@ translator = Translator()
 
 # directory = '/media/pydev/backup/kiraw/rawwa/'
 directory = '/home/pydev/open-dj/static/music/salsa'
-directory = '/home/pydev/sorting/bacha'
+directory = '/home/pydev/sorting/regga'
+directory = '/home/pydev/Downloads/Telegram Desktop'
+# directory = '/home/pydev/Music/salra'
+
 default_prefix = directory[-5:]
 os.chdir(directory)
 
@@ -33,11 +36,13 @@ def file_renamer():
         #     title = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
         # audio['composer'] = title
         #title = translator.translate(title).text + '-' + title
-        fulltitle = f"{audio['genre'][0]}-{title}"
-        print(filename, fulltitle)
+        rank = (audio.setdefault('artist','salsa-5'))[0][6:7]
+        fulltitle = f"{audio['genre'][0]}-{str(rank)}-{title}"
+        print(rank, filename, fulltitle)
 
         audio['title'] = fulltitle
         audio.save()
+
         try:
             os.rename(filename, fulltitle + '.mp3')
         except:
