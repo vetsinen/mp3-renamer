@@ -11,10 +11,18 @@ from googletrans import Translator
 
 translator = Translator()
 
+# results of renaming
+# artist field to sort by genres in format salsa-5-v5 genre-rank-v(velocity)
+# title - transformed title to be sorted
+# composer - original song name
+# performer, grouping, genre - just genre of song
+# album_artist all backuped data about track
+
+
 # directory = '/media/pydev/backup/kiraw/rawwa/'
-# directory = '/home/pydev/open-dj/static/music/kimha'
+directory = '/home/jsdev/nottaged/salla'
 # directory = '/home/pydev/sorting/regga'
-directory = '/home/pydev/Downloads/Telegram Desktop'
+# directory = '/home/pydev/Downloads/Telegram Desktop'
 # directory = '/home/pydev/Downloads/vksaver'
 # directory = '/home/pydev/tagged.muson/kimsa'
 
@@ -86,9 +94,9 @@ def backup_meta():
         all_meta : string = f"{filename}-{audio.setdefault('title',[''])[0]}-{audio.setdefault('artist',[''])[0]}"
         audio['albumartist'] = all_meta
         #audio['composer'] = all_meta
-        audio['composer'] = audio.setdefault('title',[all_meta])[0]
+        audio['composer'] = (audio.setdefault('title',[all_meta])[0]).lower()
         print(audio.setdefault('title',[''])[0])
         audio.save()
 
 if __name__=='__main__':
-   file_renamer()
+   backup_meta()
